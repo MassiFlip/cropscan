@@ -1,0 +1,79 @@
+{
+  "target": "Marcas visibles en hoja o fruto; etiquetas visuales provisionales",
+  "input": {
+    "shape": [
+      1,
+      160,
+      160,
+      3
+    ],
+    "type": "float32",
+    "rgb_range": [
+      0,
+      255
+    ]
+  },
+  "class_order": [
+    "sin_marcas_evidentes",
+    "marcas_visibles"
+  ],
+  "model": "MobileNetV2 0.35 ImageNet con capa final ajustada al lote",
+  "training_count": {
+    "sin_marcas_evidentes": 3,
+    "marcas_visibles": 5
+  },
+  "evaluation": "Exploratoria, por grupos visuales; sin parcelas identificadas",
+  "held_out_correct": 6,
+  "held_out_total": 8,
+  "held_out": [
+    {
+      "photo": "photos/bdd915b3-0c57-4dd6-812c-f819610b8984.jpg",
+      "group": "serie_acercamientos",
+      "visual_label": "marcas_visibles",
+      "prediction": "sin_marcas_evidentes"
+    },
+    {
+      "photo": "photos/PXL_20260906_164852978.jpg",
+      "group": "serie_acercamientos",
+      "visual_label": "marcas_visibles",
+      "prediction": "marcas_visibles"
+    },
+    {
+      "photo": "photos/PXL_20260906_164901335.jpg",
+      "group": "serie_acercamientos",
+      "visual_label": "marcas_visibles",
+      "prediction": "marcas_visibles"
+    },
+    {
+      "photo": "photos/PXL_20260906_165034577.jpg",
+      "group": "serie_acercamientos",
+      "visual_label": "sin_marcas_evidentes",
+      "prediction": "sin_marcas_evidentes"
+    },
+    {
+      "photo": "photos/PXL_20260906_165103631.jpg",
+      "group": "serie_acercamientos",
+      "visual_label": "sin_marcas_evidentes",
+      "prediction": "sin_marcas_evidentes"
+    },
+    {
+      "photo": "photos/PXL_20260906_165110519.jpg",
+      "group": "serie_acercamientos",
+      "visual_label": "marcas_visibles",
+      "prediction": "marcas_visibles"
+    },
+    {
+      "photo": "photos/2b682a68-e121-4709-9fc1-ffaba8e8c3fe.jpg",
+      "group": "serie_fruto_con_cicatriz",
+      "visual_label": "marcas_visibles",
+      "prediction": "marcas_visibles"
+    },
+    {
+      "photo": "photos/13ae79f9-0897-4703-acfd-cb29a74efff0.jpg",
+      "group": "serie_frutos_colgantes",
+      "visual_label": "sin_marcas_evidentes",
+      "prediction": "marcas_visibles"
+    }
+  ],
+  "export_max_abs_difference": 0.0010922551155090332
+}
