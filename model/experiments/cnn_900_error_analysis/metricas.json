@@ -1,0 +1,55 @@
+{
+  "orden_filas_y_columnas": [
+    "sanas",
+    "con_queresa"
+  ],
+  "matriz_real_filas_predicha_columnas": [
+    [
+      29,
+      56
+    ],
+    [
+      0,
+      1
+    ]
+  ],
+  "exactitud": 0.3488372093023256,
+  "exactitud_balanceada": 0.6705882352941177,
+  "macro_f1": 0.2716273442226255,
+  "tasa_falsos_positivos": 0.6588235294117647,
+  "exactitud_regla_siempre_sana": 0.9883720930232558,
+  "por_clase": {
+    "sanas": {
+      "n": 85,
+      "precision": 1.0,
+      "recall": 0.3411764705882353,
+      "f1": 0.5087719298245614
+    },
+    "con_queresa": {
+      "n": 1,
+      "precision": 0.017543859649122806,
+      "recall": 1.0,
+      "f1": 0.034482758620689655
+    }
+  },
+  "uso": "descriptivo_experimental_argmax_sin_ajuste",
+  "sha256_manifiesto": "0409e71a0d7cc5e75c5376c454afff4dfffe3a776565dbf7e3716ceb65fb42d5",
+  "sha256_keras": "ced485103623e65708c98765b364eddaca52a689265162398fbeec19d89fa67d",
+  "sha256_tflite": "90feb048c071a71e9de693b30915121d90d153fc310d7f71e16eba6e48a9c0d0",
+  "matriz_tflite": [
+    [
+      29,
+      56
+    ],
+    [
+      0,
+      1
+    ]
+  ],
+  "desacuerdos_argmax_keras_tflite": 0,
+  "max_diferencia_abs_keras_tflite": 0.00033405423164367676,
+  "grupos_prueba": {
+    "unprg_motupe": 1,
+    "agro227_lote_frutos": 85
+  }
+}

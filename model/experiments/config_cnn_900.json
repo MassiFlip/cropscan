@@ -1,0 +1,11 @@
+{
+  "purpose": "experimental_pipeline_smoke_test",
+  "seed": 42,
+  "width": 16,
+  "epochs": 6,
+  "batch_size": 16,
+  "learning_rate": 0.001,
+  "inter_op_threads": 2,
+  "intra_op_threads": 4,
+  "tflite_max_abs_error": 0.02
+}

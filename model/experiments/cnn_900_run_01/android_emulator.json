@@ -1,0 +1,112 @@
+{
+    "application_id":  "pe.edu.cropscan.experimental",
+    "emulator":  "Pixel_7",
+    "api":  36,
+    "abi":  "x86_64",
+    "physical_android_present":  false,
+    "offline":  {
+                    "airplane_mode":  true,
+                    "wifi":  false,
+                    "mobile_data":  false,
+                    "apk_internet_permission":  false
+                },
+    "apk_sha256":  "20ca5e805d4468c52531e718974cd7027ef2d0a754e785192e4ab8df2712cc6f",
+    "model_sha256":  "90feb048c071a71e9de693b30915121d90d153fc310d7f71e16eba6e48a9c0d0",
+    "class_order":  [
+                        "no_visible_signs",
+                        "possible_scale"
+                    ],
+    "fixtures_wh":  [
+                        160,
+                        160
+                    ],
+    "max_abs_difference_vs_python_display":  3.5662842E-09,
+    "runs":  [
+                 {
+                     "probe":  1,
+                     "repeat":  1,
+                     "source":  "sanas/test/agro227_1.png",
+                     "output":  [
+                                    0.00751945,
+                                    0.99248052
+                                ],
+                     "max_abs_difference_vs_python_display":  0.0000000035662842,
+                     "warmup":  3,
+                     "measured":  10,
+                     "load_ms":  52.045,
+                     "preprocessing_ms":  8.983,
+                     "median_ms":  0.436,
+                     "p95_ms":  0.674,
+                     "max_run_score_delta":  0
+                 },
+                 {
+                     "probe":  1,
+                     "repeat":  2,
+                     "source":  "sanas/test/agro227_1.png",
+                     "output":  [
+                                    0.00751945,
+                                    0.99248052
+                                ],
+                     "max_abs_difference_vs_python_display":  0.0000000035662842,
+                     "warmup":  3,
+                     "measured":  10,
+                     "load_ms":  1.675,
+                     "preprocessing_ms":  8.19,
+                     "median_ms":  0.987,
+                     "p95_ms":  2.768,
+                     "max_run_score_delta":  0
+                 },
+                 {
+                     "probe":  2,
+                     "repeat":  1,
+                     "source":  "con_queresa/test/unprg_foto22.jpg",
+                     "output":  [
+                                    0.00047532,
+                                    0.99952471
+                                ],
+                     "max_abs_difference_vs_python_display":  0.000000002562561,
+                     "warmup":  3,
+                     "measured":  10,
+                     "load_ms":  4.3,
+                     "preprocessing_ms":  5.989,
+                     "median_ms":  0.691,
+                     "p95_ms":  1.997,
+                     "max_run_score_delta":  0
+                 },
+                 {
+                     "probe":  2,
+                     "repeat":  2,
+                     "source":  "con_queresa/test/unprg_foto22.jpg",
+                     "output":  [
+                                    0.00047532,
+                                    0.99952471
+                                ],
+                     "max_abs_difference_vs_python_display":  0.000000002562561,
+                     "warmup":  3,
+                     "measured":  10,
+                     "load_ms":  1.2,
+                     "preprocessing_ms":  12.37,
+                     "median_ms":  0.597,
+                     "p95_ms":  14.552,
+                     "max_run_score_delta":  0
+                 }
+             ],
+    "original_jpeg_smoke":  {
+                                "source":  "con_queresa/test/unprg_foto22.jpg",
+                                "width":  590,
+                                "height":  412,
+                                "output":  [
+                                               0.00044204,
+                                               0.99955791
+                                           ],
+                                "load_ms":  13.036,
+                                "preprocessing_ms":  270.807,
+                                "median_ms":  0.643,
+                                "p95_ms":  9.026,
+                                "max_run_score_delta":  0
+                            },
+    "field_apk":  {
+                      "application_id":  "pe.edu.cropscan",
+                      "experimental_asset_present":  false
+                  }
+}

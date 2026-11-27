@@ -5,26 +5,27 @@ import csv
 import hashlib
 import json
 import tempfile
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 
 import numpy as np
 from PIL import Image, ImageOps
-import tensorflow as tf
 
 
 SIZE = 160
 LABELS = {"no_visible_signs": 0, "possible_scale": 1}
 SPLITS = ("train", "validation", "test")
 THRESHOLDS = (0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95)
+MINIMUM_PER_CLASS = 300
 
 
-def load_dataset(manifest):
+def load_dataset(manifest, *, load_pixels=True):
     required_columns = {"photo", "label", "unit", "split", "quality_ok"}
     seen_hashes = set()
     unit_splits = {}
     samples = defaultdict(list)
-    total = 0
+    labelled = Counter()
+    approved = {split: Counter() for split in SPLITS}
     with manifest.open(encoding="utf-8-sig", newline="") as file:
         reader = csv.DictReader(file)
         if not required_columns.issubset(reader.fieldnames or ()):
@@ -46,26 +47,46 @@ def load_dataset(manifest):
             if digest in seen_hashes:
                 raise ValueError(f"Se encontró una imagen duplicada (fila {reader.line_num})")
             seen_hashes.add(digest)
-            total += 1
+            labelled[label] += 1
             if quality == "1":
                 with Image.open(path) as image:
-                    rgb = ImageOps.exif_transpose(image).convert("RGB")
-                    resized = rgb.resize((SIZE, SIZE), Image.Resampling.BILINEAR)
-                    samples[split].append((np.asarray(resized), LABELS[label]))
-    accepted = sum(map(len, samples.values()))
-    if total < 600 or accepted / total < 0.90:
-        raise ValueError("Se requieren 600 imágenes etiquetadas y al menos 90 % con calidad aprobada")
+                    image.load()
+                    if load_pixels:
+                        rgb = ImageOps.exif_transpose(image).convert("RGB")
+                        resized = rgb.resize((SIZE, SIZE), Image.Resampling.BILINEAR)
+                        samples[split].append((np.asarray(resized), LABELS[label]))
+                approved[split][label] += 1
+    total = sum(labelled.values())
+    accepted = sum(sum(counts.values()) for counts in approved.values())
+    for label in LABELS:
+        if labelled[label] < MINIMUM_PER_CLASS:
+            raise ValueError(
+                f"Se requieren {MINIMUM_PER_CLASS} imágenes etiquetadas por clase; "
+                + ", ".join(f"{name}={labelled[name]}" for name in LABELS)
+            )
+    if accepted / total < 0.90:
+        raise ValueError("Se requiere al menos 90 % de imágenes con calidad aprobada")
 
     data = {}
     for split in SPLITS:
-        if {label for _, label in samples[split]} != {0, 1}:
+        if set(approved[split]) != set(LABELS):
             raise ValueError(f"La partición {split!r} debe contener ambas clases con calidad aprobada")
-        photos, labels = zip(*samples[split])
-        data[split] = np.stack(photos), np.array(labels)
-    return data, {"labelled": total, "accepted": accepted, "quality_rate": accepted / total}
+        if load_pixels:
+            photos, labels = zip(*samples[split])
+            data[split] = np.stack(photos), np.array(labels)
+    return data, {
+        "labelled": total,
+        "accepted": accepted,
+        "quality_rate": accepted / total,
+        "labelled_by_class": dict(labelled),
+        "approved_by_split": {split: dict(counts) for split, counts in approved.items()},
+        "units_by_split": dict(Counter(unit_splits.values())),
+    }
 
 
-def train_model(width, train, validation, epochs):
+def build_model(width):
+    import tensorflow as tf
+
     layers = tf.keras.layers
     inputs = layers.Input(shape=(SIZE, SIZE, 3), dtype="float32")
     x = layers.Rescaling(1 / 255)(inputs)
@@ -75,7 +96,13 @@ def train_model(width, train, validation, epochs):
         x = layers.MaxPooling2D()(x)
     x = layers.GlobalAveragePooling2D()(x)
     outputs = layers.Dense(2, activation="softmax")(x)
-    model = tf.keras.Model(inputs, outputs)
+    return tf.keras.Model(inputs, outputs)
+
+
+def train_model(width, train, validation, epochs):
+    import tensorflow as tf
+
+    model = build_model(width)
     model.compile(optimizer="adam", loss="sparse_categorical_crossentropy")
     counts = np.bincount(train[1])
     model.fit(
@@ -126,6 +153,8 @@ def select_threshold(labels, scores):
 
 
 def lite_scores(model_bytes, images):
+    import tensorflow as tf
+
     interpreter = tf.lite.Interpreter(model_content=model_bytes, num_threads=2)
     interpreter.allocate_tensors()
     input_index = interpreter.get_input_details()[0]["index"]
@@ -141,13 +170,27 @@ def lite_scores(model_bytes, images):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("manifest", type=Path)
-    parser.add_argument("output", type=Path, help="Nuevo directorio para resultados y exportación")
+    parser.add_argument("output", type=Path, nargs="?",
+                        help="Nuevo directorio para resultados y exportación")
     parser.add_argument("--epochs", type=int, default=24)
+    parser.add_argument("--check-only", action="store_true",
+                        help="Verifica el manifiesto y las particiones sin entrenar ni exportar")
     args = parser.parse_args()
     if args.epochs < 1:
         parser.error("--epochs debe ser positivo")
+    if args.output is None and not args.check_only:
+        parser.error("Se requiere un directorio de salida para entrenar")
 
-    data, dataset = load_dataset(args.manifest)
+    try:
+        data, dataset = load_dataset(args.manifest, load_pixels=not args.check_only)
+    except (OSError, ValueError) as error:
+        parser.error(str(error))
+    if args.check_only:
+        print(json.dumps(dataset, indent=2))
+        return
+
+    import tensorflow as tf
+
     args.output.mkdir(parents=True, exist_ok=False)
     tf.keras.utils.set_random_seed(42)
     train_x, train_y = data["train"]

@@ -14,6 +14,10 @@ final _photo = base64Decode(
   'EElEQVR4AQEFAPr/ACR1SP8DgwHhwGdScAAAAABJRU5ErkJggg==',
 );
 
+final _resultPhoto = find.byWidgetPredicate(
+  (widget) => widget is Image && widget.semanticLabel == 'Fotografía analizada',
+);
+
 class _Photos implements PhotoSource {
   Uint8List? recovered;
   Uint8List? next;
@@ -59,6 +63,23 @@ Future<void> _open(
 }
 
 void main() {
+  testWidgets('uses Poppins for headings and Inter for the interface', (
+    tester,
+  ) async {
+    await _open(tester, _Photos());
+
+    final hero = tester.widget<Text>(find.text('Revisa tu cultivo'));
+    final card = tester.widget<Text>(find.text('Revisión por fotografía'));
+    final tip = tester.widget<Text>(find.text('Busca luz natural.'));
+    expect(hero.style?.fontFamily, 'Poppins');
+    expect(card.style?.fontFamily, 'Poppins');
+    expect(tip.style?.fontFamily, 'Inter');
+
+    final appBarTheme = Theme.of(tester.element(find.byType(AppBar)));
+    expect(appBarTheme.appBarTheme.titleTextStyle?.fontFamily, 'Poppins');
+    expect(appBarTheme.textTheme.labelLarge?.fontFamily, 'Inter');
+  });
+
   testWidgets('prototype shows visible marks and the model score', (
     tester,
   ) async {
@@ -87,6 +108,7 @@ void main() {
     expect(find.text('Marcas visibles'), findsOneWidget);
     expect(find.text('Puntaje del prototipo: 79.4 %'), findsOneWidget);
     expect(find.text('Posibles signos de queresa'), findsNothing);
+    expect(_resultPhoto, findsOneWidget);
   });
 
   testWidgets('gallery, preview, processing and a labelled demo result', (
@@ -95,8 +117,7 @@ void main() {
     final photos = _Photos()..next = _photo;
     await _open(tester, photos);
 
-    expect(find.text('DEMO'), findsOneWidget);
-    await _tap(tester, 'Empezar con una foto');
+    expect(find.text('MODO DEMO'), findsOneWidget);
     await _tap(tester, 'Elegir de la galería');
     expect(photos.lastOrigin, PhotoOrigin.gallery);
     expect(find.text('Vista previa'), findsOneWidget);
@@ -108,20 +129,21 @@ void main() {
     await tester.tap(simulate);
     await tester.pump();
     expect(find.text('Simulando análisis'), findsOneWidget);
-    expect(find.text('DEMO'), findsOneWidget);
+    expect(find.text('MODO DEMO'), findsOneWidget);
 
     await tester.pumpAndSettle();
     expect(find.text('Posibles signos de queresa'), findsOneWidget);
-    expect(find.text('Confianza simulada: 88 % (suficiente)'), findsOneWidget);
-    expect(find.text('DEMO'), findsOneWidget);
+    expect(find.textContaining('%'), findsNothing);
+    expect(find.text('MODO DEMO'), findsOneWidget);
+    expect(_resultPhoto, findsOneWidget);
     await _tap(tester, 'Volver al inicio');
-    expect(find.text('Empezar con una foto'), findsOneWidget);
+    expect(find.text('Analizar planta'), findsOneWidget);
   });
 
   testWidgets('selects low confidence and repeats the photo', (tester) async {
     final photos = _Photos()..next = _photo;
     await _open(tester, photos);
-    await _tap(tester, 'Empezar con una foto');
+    await _tap(tester, 'Analizar planta');
     await _tap(tester, 'Tomar foto');
     expect(photos.lastOrigin, PhotoOrigin.camera);
     await _tap(tester, 'Posibles signos');
@@ -129,7 +151,7 @@ void main() {
     await _tap(tester, 'Simular análisis');
 
     expect(find.text('No concluyente'), findsOneWidget);
-    expect(find.text('Confianza simulada: 53 % (baja)'), findsOneWidget);
+    expect(find.text('MODO DEMO'), findsOneWidget);
     await _tap(tester, 'Repetir foto');
     expect(find.text('Agrega una foto'), findsOneWidget);
   });
@@ -175,7 +197,7 @@ void main() {
     addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
 
     await _open(tester, _Photos()..next = _photo);
-    await _tap(tester, 'Empezar con una foto');
+    await _tap(tester, 'Analizar planta');
     await _tap(tester, 'Elegir de la galería');
     await _tap(tester, 'Simular análisis');
     await _tap(tester, 'Volver al inicio');

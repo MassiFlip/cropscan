@@ -32,7 +32,7 @@ internal class CropClassifier(private val assets: AssetManager) {
                 output.shape().contentEquals(intArrayOf(1, 2)))
 
             val scores = Array(1) { FloatArray(2) }
-            interpreter.run(imageInput(photo, shape[2], shape[1], input.numBytes()), scores)
+            interpreter.run(cropImageInput(photo, shape[2], shape[1], input.numBytes()), scores)
             val (noVisibleSigns, possibleScale) = scores.single()
             require(noVisibleSigns in 0f..1f && possibleScale in 0f..1f &&
                 abs(noVisibleSigns + possibleScale - 1f) < 0.001f)
@@ -45,26 +45,27 @@ internal class CropClassifier(private val assets: AssetManager) {
         }
     }
 
-    private fun imageInput(photo: ByteArray, width: Int, height: Int, byteCount: Int): ByteBuffer {
-        val source = ImageDecoder.createSource(ByteBuffer.wrap(photo))
-        val bitmap = ImageDecoder.decodeBitmap(source) { decoder, _, _ ->
-            decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
-            decoder.setTargetColorSpace(ColorSpace.get(ColorSpace.Named.SRGB))
-            decoder.setTargetSize(width, height)
-        }
-        val pixels = IntArray(width * height)
-        try {
-            bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
-        } finally {
-            bitmap.recycle()
-        }
-        val input = ByteBuffer.allocateDirect(byteCount).order(ByteOrder.nativeOrder())
-        for (pixel in pixels) {
-            input.putFloat(((pixel shr 16) and 0xff).toFloat())
-            input.putFloat(((pixel shr 8) and 0xff).toFloat())
-            input.putFloat((pixel and 0xff).toFloat())
-        }
-        input.rewind()
-        return input
+}
+
+internal fun cropImageInput(photo: ByteArray, width: Int, height: Int, byteCount: Int): ByteBuffer {
+    val source = ImageDecoder.createSource(ByteBuffer.wrap(photo))
+    val bitmap = ImageDecoder.decodeBitmap(source) { decoder, _, _ ->
+        decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+        decoder.setTargetColorSpace(ColorSpace.get(ColorSpace.Named.SRGB))
+        decoder.setTargetSize(width, height)
     }
+    val pixels = IntArray(width * height)
+    try {
+        bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
+    } finally {
+        bitmap.recycle()
+    }
+    val input = ByteBuffer.allocateDirect(byteCount).order(ByteOrder.nativeOrder())
+    for (pixel in pixels) {
+        input.putFloat(((pixel shr 16) and 0xff).toFloat())
+        input.putFloat(((pixel shr 8) and 0xff).toFloat())
+        input.putFloat((pixel and 0xff).toFloat())
+    }
+    input.rewind()
+    return input
 }

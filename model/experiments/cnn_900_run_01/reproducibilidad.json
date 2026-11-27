@@ -1,0 +1,8 @@
+{
+  "repeticion_completa": true,
+  "epocas": 6,
+  "delta_historial_maximo": 0.0,
+  "delta_inferencia_maximo": 0.0,
+  "matriz_prueba_identica": true,
+  "tflite_sha256_identico": true
+}

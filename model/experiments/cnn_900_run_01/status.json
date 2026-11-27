@@ -1,0 +1,172 @@
+{
+  "mode": "experimental",
+  "scientific_validation": false,
+  "config": {
+    "purpose": "experimental_pipeline_smoke_test",
+    "seed": 42,
+    "width": 16,
+    "epochs": 6,
+    "batch_size": 16,
+    "learning_rate": 0.001,
+    "inter_op_threads": 2,
+    "intra_op_threads": 4,
+    "tflite_max_abs_error": 0.02
+  },
+  "step": "complete",
+  "environment": {
+    "python": "3.13.5",
+    "tensorflow": "2.20.0",
+    "keras": "3.15.1",
+    "numpy": "2.5.5",
+    "matplotlib": "3.10.8",
+    "device": "CPU",
+    "oneDNN": "0",
+    "script_sha256": "cedac0ce108956d2c13f32871277c6d251fe3f2c1a2b347330e31183ae5db261",
+    "field_pipeline_sha256": "2ae049cd3e519ca2a6c2592f70d1e460516568f0ab8b9c823d8bdd34d0d46456"
+  },
+  "data": {
+    "archivos": 900,
+    "por_clase": {
+      "con_queresa": 450,
+      "sanas": 450
+    },
+    "por_particion": {
+      "sanas": {
+        "train": {
+          "original": 252,
+          "duplicada": 0,
+          "aumentada": 106
+        },
+        "validation": {
+          "original": 7,
+          "duplicada": 0,
+          "aumentada": 0
+        },
+        "test": {
+          "original": 85,
+          "duplicada": 0,
+          "aumentada": 0
+        }
+      },
+      "con_queresa": {
+        "train": {
+          "original": 4,
+          "duplicada": 0,
+          "aumentada": 444
+        },
+        "validation": {
+          "original": 1,
+          "duplicada": 0,
+          "aumentada": 0
+        },
+        "test": {
+          "original": 1,
+          "duplicada": 0,
+          "aumentada": 0
+        }
+      }
+    },
+    "grupos_originales": 7,
+    "sha256_unicos": 900,
+    "semilla": 42,
+    "manifest_sha256": "0409e71a0d7cc5e75c5376c454afff4dfffe3a776565dbf7e3716ceb65fb42d5",
+    "inventory_sha256": "4f5367aa365524e2ad336dca80dd9f432f42df01be8294b2762a94db10d21119",
+    "healthy_original_exclusions": {
+      "sanas/agro227_Copia_de_IMG-20250812-WA0149.jpg": "Probable recodificación de la toma WA0137, conservada como representante.",
+      "sanas/agro227_Copia_de_IMG-20250812-WA0181.jpg": "Coincidencia visual con WA0193, cuya etiqueta está en conflicto."
+    },
+    "positive_augmentations_by_origin": {
+      "con_queresa/uns_anexo1_A.jpg": 148,
+      "con_queresa/uns_anexo1_B.jpg": 148,
+      "con_queresa/uns_anexo1_C.jpg": 148
+    },
+    "pending_rows_used": 0
+  },
+  "training": {
+    "optimizer": "Adam",
+    "loss": "sparse_categorical_crossentropy",
+    "class_weights": {
+      "no_visible_signs": 1.1256983280181885,
+      "possible_scale": 0.8995535969734192
+    },
+    "epochs_requested": 6,
+    "parameters": 12690,
+    "epochs_completed": 6,
+    "final_epoch": {
+      "accuracy": 1.0,
+      "loss": 8.267642988357693e-05,
+      "val_accuracy": 0.5,
+      "val_loss": 6.461089611053467
+    }
+  },
+  "test_descriptive": {
+    "loss": 4.770127296447754,
+    "accuracy": 0.3488371968269348,
+    "matrix_labels": [
+      "no_visible_signs",
+      "possible_scale"
+    ],
+    "matrix_true_rows_predicted_columns": [
+      [
+        29,
+        56
+      ],
+      [
+        0,
+        1
+      ]
+    ]
+  },
+  "tflite": {
+    "format": "TFLite FP16 weights, float32 input and output",
+    "input_shape": [
+      1,
+      160,
+      160,
+      3
+    ],
+    "input_range": [
+      0,
+      255
+    ],
+    "output_shape": [
+      1,
+      2
+    ],
+    "class_order": [
+      "no_visible_signs",
+      "possible_scale"
+    ],
+    "threshold": null,
+    "bytes": 32648,
+    "sha256": "90feb048c071a71e9de693b30915121d90d153fc310d7f71e16eba6e48a9c0d0",
+    "probes": [
+      {
+        "image": "sanas/test/agro227_1.png",
+        "source_class": "sanas",
+        "keras": [
+          0.00751127814874053,
+          0.9924887418746948
+        ],
+        "tflite": [
+          0.007519450969994068,
+          0.9924805164337158
+        ],
+        "max_abs_error": 8.225440979003906e-06
+      },
+      {
+        "image": "con_queresa/test/unprg_foto22.jpg",
+        "source_class": "con_queresa",
+        "keras": [
+          0.0004748391511384398,
+          0.9995251893997192
+        ],
+        "tflite": [
+          0.0004753177927341312,
+          0.999524712562561
+        ],
+        "max_abs_error": 4.786415956914425e-07
+      }
+    ]
+  }
+}

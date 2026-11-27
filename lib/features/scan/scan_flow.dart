@@ -89,7 +89,6 @@ class _ScanFlowState extends State<ScanFlow> {
       if (!mounted) return;
       setState(() {
         _result = result;
-        _photo = null;
         _step = _Step.result;
       });
       if (!analysis.isDemo) {
@@ -136,16 +135,39 @@ class _ScanFlowState extends State<ScanFlow> {
     });
   }
 
+  void _closeScan() {
+    if (_busy) return;
+    setState(() {
+      _step = _Step.home;
+      _photo = null;
+      _result = null;
+      _error = null;
+      _replacing = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final demo = widget.inference.isDemo;
     final prototype = widget.prototype;
+    final modeBadge = demo || prototype
+        ? ScanBadge(label: demo ? 'MODO DEMO' : 'Prototipo', warm: demo)
+        : null;
+    final compactHeader =
+        MediaQuery.sizeOf(context).width < 340 ||
+        MediaQuery.textScalerOf(context).scale(19) >= 31;
     final title = switch (_step) {
-      _Step.home => prototype ? 'CropScan Prototipo' : 'CropScan',
+      _Step.home => 'CropScan',
       _Step.source => 'Elegir foto',
       _Step.preview => 'Vista previa',
       _Step.processing => 'Procesamiento',
       _Step.result => 'Resultado',
+    };
+    final stage = switch (_step) {
+      _Step.home => null,
+      _Step.source => 1,
+      _Step.preview => 2,
+      _Step.result || _Step.processing => null,
     };
     final content = switch (_step) {
       _Step.home => HomeView(
@@ -153,26 +175,30 @@ class _ScanFlowState extends State<ScanFlow> {
         demo: demo,
         prototype: prototype,
         onStart: () => _openSource(),
+        onGallery: () => _pickPhoto(PhotoOrigin.gallery),
       ),
       _Step.source => SourceView(
         busy: _readingPhoto,
         onPick: _pickPhoto,
+        onCancel: _closeScan,
         onKeep: _replacing ? _goBack : null,
       ),
       _Step.preview => PreviewView(
         photo: _photo!,
         onAnalyze: _analyze,
         onReplace: () => _openSource(replacing: true),
+        onCancel: _closeScan,
         scenario: widget.inference is DemoInferenceService ? _scenario : null,
         onScenarioChanged: (scenario) => setState(() => _scenario = scenario),
       ),
-      _Step.processing => ProcessingView(demo: demo),
+      _Step.processing => ProcessingView(demo: demo, photo: _photo!),
       _Step.result => ResultView(
         result: _result!,
+        photo: _photo!,
         demo: demo,
         prototype: prototype,
         onRetake: () => _openSource(),
-        onFinish: _goBack,
+        onFinish: _closeScan,
       ),
     };
 
@@ -184,51 +210,81 @@ class _ScanFlowState extends State<ScanFlow> {
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
+          centerTitle: _step != _Step.home && !compactHeader,
           leading: _step != _Step.home && !_busy
-              ? BackButton(onPressed: _goBack)
+              ? Center(
+                  child: Material(
+                    color: Colors.white,
+                    shape: const CircleBorder(),
+                    child: BackButton(onPressed: _goBack),
+                  ),
+                )
               : null,
-          title: Text(title),
+          title: _step == _Step.home
+              ? const Row(
+                  spacing: 10,
+                  children: [
+                    CropScanMark(),
+                    Flexible(
+                      child: Text('CropScan', overflow: TextOverflow.ellipsis),
+                    ),
+                  ],
+                )
+              : Text(title),
           actions: [
-            if (demo)
-              const Padding(
-                padding: EdgeInsetsDirectional.only(end: 16),
-                child: DemoBadge(),
+            if (modeBadge != null && !compactHeader)
+              Padding(
+                padding: const EdgeInsetsDirectional.only(end: 16),
+                child: Center(child: modeBadge),
               ),
           ],
         ),
         body: SafeArea(
           child: LayoutBuilder(
-            builder: (context, constraints) => SingleChildScrollView(
+            builder: (context, constraints) => TweenAnimationBuilder<double>(
               key: ValueKey(_step),
-              padding: EdgeInsets.fromLTRB(
-                constraints.maxWidth < 360 ? 16 : 24,
-                16,
-                constraints.maxWidth < 360 ? 16 : 24,
-                28,
-              ),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 560),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (_error case final message?) ...[
-                        ScanMessage(
-                          icon: Icons.error_outline,
-                          message: message,
-                          isError: true,
-                        ),
-                        const SizedBox(height: 16),
+              tween: Tween(begin: 0.86, end: 1),
+              duration: MediaQuery.disableAnimationsOf(context)
+                  ? Duration.zero
+                  : const Duration(milliseconds: 180),
+              builder: (_, opacity, child) =>
+                  Opacity(opacity: opacity, child: child),
+              child: SingleChildScrollView(
+                key: ValueKey(_step),
+                padding: EdgeInsets.fromLTRB(
+                  constraints.maxWidth < 360 ? 10 : 16,
+                  8,
+                  constraints.maxWidth < 360 ? 10 : 16,
+                  24,
+                ),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 560),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (modeBadge != null && compactHeader) ...[
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: modeBadge,
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                        if (stage != null) ...[
+                          ScanSteps(step: stage),
+                          const SizedBox(height: 18),
+                        ],
+                        if (_error case final message?) ...[
+                          ScanMessage(
+                            icon: Icons.error_outline,
+                            message: message,
+                            isError: true,
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        content,
                       ],
-                      content,
-                      const SizedBox(height: 24),
-                      ScanMessage(
-                        icon: Icons.info_outline,
-                        message: prototype
-                            ? 'Prototipo experimental. Evalúa marcas visibles en la foto. Su causa requiere revisión agrícola.'
-                            : 'Evaluación preliminar e informativa. Si tienes dudas, consulta a un especialista agrícola.',
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),

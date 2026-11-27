@@ -5,10 +5,21 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-val prototype = providers.gradleProperty("dart-defines").orNull
+val dartDefines = providers.gradleProperty("dart-defines").orNull
     ?.split(",")
-    ?.any { String(Base64.getDecoder().decode(it), Charsets.UTF_8) == "CROPSCAN_PROTOTYPE=true" }
-    ?: false
+    ?.map { String(Base64.getDecoder().decode(it), Charsets.UTF_8) }
+    .orEmpty()
+val prototype = "CROPSCAN_PROTOTYPE=true" in dartDefines
+val experimental = "CROPSCAN_EXPERIMENTAL=true" in dartDefines
+require(!experimental || (!prototype && "CROPSCAN_DEMO=true" !in dartDefines)) {
+    "Build CropScan Experimental separately from the prototype and demo."
+}
+if (experimental) {
+    val target = providers.gradleProperty("target").orNull.orEmpty().replace('\\', '/')
+    require(target == "lib/main_experimental.dart" || target.endsWith("/lib/main_experimental.dart")) {
+        "CROPSCAN_EXPERIMENTAL requires --target lib/main_experimental.dart"
+    }
+}
 
 abstract class PreparePrototypeAssets : DefaultTask() {
     @get:InputFile abstract val modelFile: RegularFileProperty
@@ -32,8 +43,16 @@ android {
     }
 
     defaultConfig {
-        applicationId = if (prototype) "pe.edu.cropscan.prototype" else "pe.edu.cropscan"
-        manifestPlaceholders["appLabel"] = if (prototype) "CropScan Prototipo" else "CropScan"
+        applicationId = when {
+            experimental -> "pe.edu.cropscan.experimental"
+            prototype -> "pe.edu.cropscan.prototype"
+            else -> "pe.edu.cropscan"
+        }
+        manifestPlaceholders["appLabel"] = when {
+            experimental -> "CropScan Experimental"
+            prototype -> "CropScan Prototipo"
+            else -> "CropScan"
+        }
         minSdk = 29
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -54,6 +73,19 @@ if (prototype) {
         val prepareAssets = tasks.register<PreparePrototypeAssets>("prepare${suffix}PrototypeAssets") {
             modelFile.set(rootProject.layout.projectDirectory.file("../model/prototype/crop-visual-prototype.tflite"))
             outputDirectory.set(layout.buildDirectory.dir("generated/prototypeAssets/${variant.name}"))
+        }
+        variant.sources.assets?.addGeneratedSourceDirectory(prepareAssets, PreparePrototypeAssets::outputDirectory)
+    }
+}
+
+if (experimental) {
+    androidComponents.onVariants { variant ->
+        val suffix = variant.name.replaceFirstChar { it.uppercaseChar() }
+        val prepareAssets = tasks.register<PreparePrototypeAssets>("prepare${suffix}ExperimentalAssets") {
+            modelFile.set(rootProject.layout.projectDirectory.file(
+                "../model/experiments/cnn_900_run_01/cropscan_experimental.tflite"
+            ))
+            outputDirectory.set(layout.buildDirectory.dir("generated/experimentalAssets/${variant.name}"))
         }
         variant.sources.assets?.addGeneratedSourceDirectory(prepareAssets, PreparePrototypeAssets::outputDirectory)
     }

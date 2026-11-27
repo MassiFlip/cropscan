@@ -1,0 +1,166 @@
+{
+  "falso_positivo": {
+    "n": 56,
+    "q1_mediana_q3": {
+      "luma_media": [
+        120.3591,
+        133.57475,
+        144.65308
+      ],
+      "contraste_luma": [
+        47.94567,
+        54.1955,
+        63.16038
+      ],
+      "fraccion_clara": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "fraccion_oscura": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "saturacion_media": [
+        0.15728,
+        0.25205,
+        0.27327
+      ],
+      "nitidez_textura_laplaciano": [
+        289.16615,
+        353.5486,
+        449.11987
+      ],
+      "keras_possible_scale": [
+        0.99667,
+        0.99943,
+        0.99987
+      ]
+    },
+    "lado_menor_mediana_px": 3072.0,
+    "megapixeles_mediana": 12.53376,
+    "aspectos": {
+      "horizontal": 11,
+      "vertical": 45
+    },
+    "formatos": {
+      "png": 16,
+      "jpg": 40
+    },
+    "fondo": {
+      "neutro_claro_dominante": 25,
+      "empaques": 3,
+      "panel_oscuro_y_superficie_clara": 6,
+      "carton_dominante": 22
+    },
+    "solo_fondo_neutro_mediana": {
+      "luma_media": 125.2211,
+      "contraste_luma": 59.8611,
+      "saturacion_media": 0.16076,
+      "nitidez_textura_laplaciano": 288.3448
+    },
+    "megapixeles_rango": [
+      0.090792,
+      12.53376
+    ],
+    "metadatos_decodificacion": {
+      "modo_RGBA": 16,
+      "modo_RGB": 40
+    },
+    "posibles_scale_mayor_0_99": 46
+  },
+  "sana_acertada": {
+    "n": 29,
+    "q1_mediana_q3": {
+      "luma_media": [
+        155.3227,
+        160.1057,
+        167.3923
+      ],
+      "contraste_luma": [
+        47.8771,
+        52.0441,
+        54.6074
+      ],
+      "fraccion_clara": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "fraccion_oscura": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "saturacion_media": [
+        0.12533,
+        0.14782,
+        0.1632
+      ],
+      "nitidez_textura_laplaciano": [
+        254.7436,
+        313.434,
+        360.0543
+      ],
+      "keras_possible_scale": [
+        0.04022,
+        0.08772,
+        0.23539
+      ]
+    },
+    "lado_menor_mediana_px": 3072.0,
+    "megapixeles_mediana": 12.53376,
+    "aspectos": {
+      "vertical": 29
+    },
+    "formatos": {
+      "jpg": 28,
+      "jpeg": 1
+    },
+    "fondo": {
+      "neutro_claro_dominante": 29
+    },
+    "solo_fondo_neutro_mediana": {
+      "luma_media": 160.1057,
+      "contraste_luma": 52.0441,
+      "saturacion_media": 0.14782,
+      "nitidez_textura_laplaciano": 313.434
+    },
+    "megapixeles_rango": [
+      1.9264,
+      12.53376
+    ],
+    "metadatos_decodificacion": {
+      "modo_RGB": 29
+    },
+    "posibles_scale_mayor_0_99": 0
+  },
+  "notas": "Cuartiles en orden Q1, mediana y Q3. Las se?ales se calculan sobre cuadros RGB de 160 x 160 completos, sin segmentaci?n. Umbral de 0,99 solo describe la cola de puntuaciones, no es una regla de decisi?n.",
+  "entrenamiento_por_clase_y_tipo": {
+    "con_queresa_aumentada": {
+      "n": 444,
+      "luma_media_mediana": 116.0474,
+      "fraccion_de_pixeles_claros_mediana": 0.00148,
+      "cuadros_con_mas_de_65_por_ciento_de_pixeles_claros": 0
+    },
+    "con_queresa_original": {
+      "n": 4,
+      "luma_media_mediana": 113.6617,
+      "fraccion_de_pixeles_claros_mediana": 0.00172,
+      "cuadros_con_mas_de_65_por_ciento_de_pixeles_claros": 0
+    },
+    "sanas_aumentada": {
+      "n": 106,
+      "luma_media_mediana": 225.7335,
+      "fraccion_de_pixeles_claros_mediana": 0.69436,
+      "cuadros_con_mas_de_65_por_ciento_de_pixeles_claros": 72
+    },
+    "sanas_original": {
+      "n": 252,
+      "luma_media_mediana": 232.3587,
+      "fraccion_de_pixeles_claros_mediana": 0.73322,
+      "cuadros_con_mas_de_65_por_ciento_de_pixeles_claros": 236
+    }
+  }
+}

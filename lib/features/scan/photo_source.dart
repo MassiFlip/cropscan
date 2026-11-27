@@ -16,9 +16,11 @@ abstract interface class PhotoSource {
 }
 
 class AndroidPhotoSource implements PhotoSource {
-  AndroidPhotoSource({ImagePicker? picker}) : _picker = picker ?? ImagePicker();
+  AndroidPhotoSource({ImagePicker? picker, this.maxDimension = 1920})
+    : _picker = picker ?? ImagePicker();
 
   final ImagePicker _picker;
+  final double? maxDimension;
 
   @override
   Future<Uint8List?> pick(PhotoOrigin origin) {
@@ -28,8 +30,8 @@ class AndroidPhotoSource implements PhotoSource {
           PhotoOrigin.camera => ImageSource.camera,
           PhotoOrigin.gallery => ImageSource.gallery,
         },
-        maxWidth: 1920,
-        maxHeight: 1920,
+        maxWidth: maxDimension,
+        maxHeight: maxDimension,
         requestFullMetadata: false,
       ),
     );

@@ -9,10 +9,15 @@ import java.io.FileNotFoundException
 
 class MainActivity : FlutterActivity() {
     private var inferenceChannel: MethodChannel? = null
+    private var experimentalChannel: MethodChannel? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         val messenger = flutterEngine.dartExecutor.binaryMessenger
+        if (applicationContext.packageName == "pe.edu.cropscan.experimental") {
+            experimentalChannel = experimentalInferenceChannel(messenger, applicationContext.assets)
+            return
+        }
         val classifier = CropClassifier(applicationContext.assets)
         inferenceChannel = MethodChannel(
             messenger,
@@ -43,6 +48,8 @@ class MainActivity : FlutterActivity() {
     }
 
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        experimentalChannel?.setMethodCallHandler(null)
+        experimentalChannel = null
         inferenceChannel?.setMethodCallHandler(null)
         inferenceChannel = null
         super.cleanUpFlutterEngine(flutterEngine)

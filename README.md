@@ -8,7 +8,14 @@ La ruta de análisis Android usa un intérprete TensorFlow Lite (LiteRT) incluid
 
 Para acreditar el MVP se requieren fotos autorizadas de hojas y frutos de palta Naval de Huaral, con etiquetas revisadas por un especialista y trazabilidad por unidad productiva. El conjunto debe tener al menos 600 imágenes etiquetadas y al menos 90 % con nitidez, encuadre y trazabilidad aprobados. Registra la procedencia, el permiso y la revisión de cada lote en la bitácora de campo.
 
-El CSV de entrenamiento usa las columnas `photo,label,unit,split,quality_ok`. La ruta de cada foto es relativa al CSV. Las etiquetas son `no_visible_signs` y `possible_scale`. Usa el mismo identificador de unidad productiva en todas sus fotos y asigna cada unidad a una sola partición entre `train`, `validation` y `test`, con ambas clases en cada partición. Marca `quality_ok` con `1` cuando la foto aprueba los tres criterios y con `0` en los otros casos.
+El CSV de entrenamiento usa las columnas `photo,label,unit,split,quality_ok`. La ruta de cada foto es relativa al CSV. Las etiquetas son `no_visible_signs` y `possible_scale`. Usa el mismo identificador de unidad productiva en todas sus fotos y asigna cada unidad a una sola partición entre `train`, `validation` y `test`, con ambas clases en cada partición. Marca `quality_ok` con `1` cuando la foto aprueba los tres criterios y con `0` en los otros casos. El entrenamiento exige al menos 300 fotos etiquetadas por clase.
+
+Para revisar el lote recopilado, ejecuta la auditoría en un directorio de salida nuevo. Usa las colas CSV para revisar la calidad y documentar la validación agronómica. Rellena el manifiesto de campo con etiquetas del especialista y comprueba su estructura antes de entrenar.
+
+```shell
+python model/audit_dataset.py .tooling/dataset-queresa .tooling/auditoria-nueva
+python model/train.py <ruta-al-csv-de-campo> --check-only
+```
 
 ```powershell
 python -m pip install "tensorflow==2.20.0" Pillow
