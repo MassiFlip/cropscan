@@ -1,0 +1,116 @@
+{
+  "class_order": [
+    "no_visible_signs",
+    "possible_scale"
+  ],
+  "split_results": {
+    "validation": {
+      "v1": {
+        "matrix_true_rows_predicted_columns": [
+          [
+            3,
+            4
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "accuracy": 0.5,
+        "macro_f1": 0.4666666666666667,
+        "healthy_false_positives": 4,
+        "healthy_false_positive_rate": 0.5714285714285714,
+        "positive_false_negatives": 0
+      },
+      "v2": {
+        "matrix_true_rows_predicted_columns": [
+          [
+            3,
+            4
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "accuracy": 0.5,
+        "macro_f1": 0.4666666666666667,
+        "healthy_false_positives": 4,
+        "healthy_false_positive_rate": 0.5714285714285714,
+        "positive_false_negatives": 0
+      },
+      "v2_keras_tflite": {
+        "images": 8,
+        "max_absolute_probability_error": 0.0024019181728363037,
+        "different_argmax": 0,
+        "within_configured_tolerance": true
+      }
+    },
+    "test": {
+      "v1": {
+        "matrix_true_rows_predicted_columns": [
+          [
+            29,
+            56
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "accuracy": 0.3488372093023256,
+        "macro_f1": 0.2716273442226255,
+        "healthy_false_positives": 56,
+        "healthy_false_positive_rate": 0.6588235294117647,
+        "positive_false_negatives": 0
+      },
+      "v2": {
+        "matrix_true_rows_predicted_columns": [
+          [
+            28,
+            57
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "accuracy": 0.3372093023255814,
+        "macro_f1": 0.2647367631618419,
+        "healthy_false_positives": 57,
+        "healthy_false_positive_rate": 0.6705882352941176,
+        "positive_false_negatives": 0
+      },
+      "v2_keras_tflite": {
+        "images": 86,
+        "max_absolute_probability_error": 0.002368927001953125,
+        "different_argmax": 0,
+        "within_configured_tolerance": true
+      }
+    }
+  },
+  "healthy_paired_outcomes": {
+    "correcto_en_ambos": 27,
+    "fp_corregido": 1,
+    "fp_nuevo": 2,
+    "fp_en_ambos": 55
+  },
+  "training_curves": {
+    "v1": {
+      "minimum_validation_loss_epoch": 1,
+      "minimum_validation_loss": 0.6023691892623901,
+      "last_epoch_training_accuracy": 1.0,
+      "last_epoch_validation_accuracy": 0.5,
+      "last_epoch_training_loss": 8.267642988357693e-05,
+      "last_epoch_validation_loss": 6.461089611053467
+    },
+    "v2": {
+      "minimum_validation_loss_epoch": 1,
+      "minimum_validation_loss": 0.5059375762939453,
+      "last_epoch_training_accuracy": 1.0,
+      "last_epoch_validation_accuracy": 0.5,
+      "last_epoch_training_loss": 5.367627818486653e-05,
+      "last_epoch_validation_loss": 6.8774800300598145
+    }
+  }
+}

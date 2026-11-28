@@ -137,7 +137,7 @@ def export_and_smoke_test(tf, model, output, images, labels, rows, tolerance):
     }
 
 
-def run(dataset, output, config):
+def run(dataset, output, config, *, verify_dataset=verify_data):
     status = {"mode": "experimental", "scientific_validation": False, "config": config}
     output.mkdir(parents=True)
     status_path = output / "status.json"
@@ -164,8 +164,9 @@ def run(dataset, output, config):
             "field_pipeline_sha256": digest(Path(__file__).with_name("train.py")),
         }
         status["step"] = "data_verification"
-        rows, status["data"] = verify_data(dataset)
-        print("Verificación de las 900 imágenes y de los grupos completada.", flush=True)
+        rows, status["data"] = verify_dataset(dataset)
+        print(f"Verificación de {status['data']['archivos']} imágenes y de sus grupos completada.",
+              flush=True)
 
         status["step"] = "training"
         train_x, train_y, _ = load_split(dataset, rows, "train")

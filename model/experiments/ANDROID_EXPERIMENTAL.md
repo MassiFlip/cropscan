@@ -10,7 +10,9 @@ adb install -r build/app/outputs/flutter-apk/app-release.apk
 adb shell am start -n pe.edu.cropscan.experimental/pe.edu.cropscan.MainActivity
 ```
 
-Selecciona una foto almacenada en el teléfono y pulsa **Ejecutar inferencia local**. En modo avión se requiere que la foto esté disponible localmente. La pantalla de CropScan mantiene visible **MODELO EXPERIMENTAL — RESULTADOS NO VALIDADOS** antes, durante y después de ejecutar la prueba.
+Toma una foto con la cámara o elige una imagen almacenada en el teléfono. Revisa la vista previa y pulsa **Ejecutar inferencia local**. Puedes usar la cámara o la galería de nuevo para cambiar la foto. En modo avión se requiere que cualquier imagen de galería esté disponible localmente. La pantalla de CropScan mantiene visible **MODELO EXPERIMENTAL — RESULTADOS NO VALIDADOS** antes, durante y después de ejecutar la prueba.
+
+Después de obtener las probabilidades, **Demostrar el estado no concluyente** activa un estado explícitamente simulado. Puedes volver a las probabilidades, repetir el análisis o cambiar la foto. El modelo experimental carece de un umbral validado y la demostración se activa únicamente por esa acción.
 
 ## Contrato y medición
 
